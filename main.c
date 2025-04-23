@@ -1,15 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h> // For exiting
 #include <string.h> // For memset
-#include "stack.h"
+#include <signal.h>
+#include "cross_input.h"
+#include "stack_template.h"
+
+DECLARE_STACK(Int, int);
 
 int main()
 {
     char bytes[100];
     memset(bytes, 0, sizeof(bytes));
     char *pointer = bytes;
-    Stack stack;
-    if (!initializeStack(&stack))
+    IntStack bracket_stack;
+    if (!Int_initializeStack(&bracket_stack))
     {
         printf("Unable to initialize stack");
         exit(0);
@@ -22,7 +26,7 @@ int main()
     // ############
 
     //                  0123456789
-    char inputCode[] = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
+    char inputCode[] = ",[.,]"; //"++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
     /*
                v
     stack = 1, 3
@@ -31,7 +35,7 @@ int main()
         pop
         peek
     */
-    for (int i = 0; i < sizeof(inputCode); i++)
+    for (size_t i = 0; i < sizeof(inputCode); i++)
     {
         char c = inputCode[i];
 
@@ -52,17 +56,20 @@ int main()
         case '.':
             printf("%c", *pointer);
             break;
+        case ',':
+            *pointer = get_char();
+            break;
         case '[':
-            push(&stack, i);
+            Int_push(&bracket_stack, i);
             break;
         case ']':
             if (*pointer != 0)
             {
-                i = peek(&stack);
+                i = Int_peek(&bracket_stack);
             }
             else
             {
-                pop(&stack);
+                Int_pop(&bracket_stack);
             }
             break;
         default:
