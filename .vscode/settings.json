@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "stack.h": "c",
+        "xstring": "c",
+        "xlocale": "c"
+    }
+}
